@@ -98,6 +98,21 @@ def drinks_detail(payload):
     appropriate status code indicating reason for failure 
 '''
 
+
+@app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
+def create_drink(payload):
+    body = request.get_json()
+    new_drink = Drink(title=body['title'], recipe="""{}""".format(body['recipe']))
+
+    new_drink.insert()
+    new_drink.recipe = body['recipe']
+    return jsonify({
+        'success': True,
+        'drinks': Drink.long(new_drink)
+    })
+
+
 '''
 @TODO: Implement endpoint 
     PATCH /drinks/<id> where <id> is the existing model id 
