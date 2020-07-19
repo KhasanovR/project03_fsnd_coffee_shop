@@ -34,7 +34,6 @@ class AuthError(Exception):
 
 
 def get_token_auth_header():
-
     auth = request.headers.get('Authorization', None)
 
     if not auth:
@@ -78,7 +77,6 @@ def get_token_auth_header():
 
 
 def check_permissions(permission, payload):
-
     if 'permissions' not in payload:
         raise AuthError({
             'code': 'invalid_claims',
@@ -94,7 +92,7 @@ def check_permissions(permission, payload):
 
 
 '''
-@TODO: Implement verify_decode_jwt(token) method
+@TODO(Done): Implement verify_decode_jwt(token) method
     @INPUTS
         token: a json web token (string)
 
@@ -110,7 +108,6 @@ def check_permissions(permission, payload):
 
 
 def verify_decode_jwt(token):
-
     jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())
     unverified_header = jwt.get_unverified_header(token)
@@ -167,7 +164,7 @@ def verify_decode_jwt(token):
 
 
 '''
-@TODO: Implement @requires_auth(permission) decorator method
+@TODO(Done): Implement @requires_auth(permission) decorator method
     @INPUTS
         permission: string permission (i.e. 'post:drink')
 
@@ -183,7 +180,13 @@ def requires_auth(permission=''):
         @wraps(f)
         def wrapper(*args, **kwargs):
             token = get_token_auth_header()
-            payload = verify_decode_jwt(token)
+            try:
+                payload = verify_decode_jwt(token)
+            except:
+                raise AuthError({
+                    'code': 'unauthorized',
+                    'description': 'Permissions not found'
+                }, 401)
             check_permissions(permission, payload)
             return f(payload, *args, **kwargs)
 
