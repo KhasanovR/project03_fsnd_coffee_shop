@@ -2,6 +2,8 @@
   <dictionary name="rakhmatjon">
     <words>
       <w>authentification</w>
+      <w>jsonurl</w>
+      <w>jwks</w>
     </words>
   </dictionary>
 </component>
