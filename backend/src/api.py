@@ -125,6 +125,34 @@ def create_drink(payload):
     appropriate status code indicating reason for failure 
 '''
 
+
+@app.route('/drinks/<int:drink_id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
+def update_drink(payload, drink_id):
+    body = request.get_json()
+
+    if not body:
+        abort(400, {'message': 'request does not contain a valid JSON body.'})
+
+    drink_to_update = Drink.query.filter(Drink.id == drink_id).one_or_none()
+
+    updated_title = body.get('title', None)
+    updated_recipe = body.get('recipe', None)
+
+    if updated_title:
+        drink_to_update.title = body['title']
+
+    if updated_recipe:
+        drink_to_update.recipe = """{}""".format(body['recipe'])
+
+    drink_to_update.update()
+
+    return jsonify({
+        'success': True,
+        'drinks': [Drink.long(drink_to_update)]
+    })
+
+
 '''
 @TODO implement endpoint
     DELETE /drinks/<id>
