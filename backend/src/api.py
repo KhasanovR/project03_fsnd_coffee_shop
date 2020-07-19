@@ -49,7 +49,7 @@ def get_drinks_with_format(r_format):
 # ---------------------------------------------------------------------------- #
 
 '''
-@TODO: Implement endpoint
+@TODO(Done): Implement endpoint
     GET /drinks
         it should be a public endpoint
         it should contain only the drink.short() data representation
@@ -68,7 +68,7 @@ def drinks():
 
 
 '''
-@TODO: Implement endpoint
+@TODO(Done): Implement endpoint
     GET /drinks-detail
         it should require the 'get:drinks-detail' permission
         it should contain the drink.long() data representation
@@ -88,7 +88,7 @@ def drinks_detail(payload):
 
 
 '''
-@TODO: Implement endpoint 
+@TODO(Done): Implement endpoint 
     POST /drinks 
         it should create a new row in the drinks table 
         it should require the 'post:drinks' permission 
@@ -114,7 +114,7 @@ def create_drink(payload):
 
 
 '''
-@TODO: Implement endpoint 
+@TODO(Done): Implement endpoint 
     PATCH /drinks/<id> where <id> is the existing model id 
         it should respond with a 404 error if <id> is not found 
         it should update the corresponding row for <id> 
@@ -154,7 +154,7 @@ def update_drink(payload, drink_id):
 
 
 '''
-@TODO implement endpoint
+@TODO(Done): Implement endpoint
     DELETE /drinks/<id>
         where <id> is the existing model id
         it should respond with a 404 error if <id> is not found
@@ -163,6 +163,26 @@ def update_drink(payload, drink_id):
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+
+
+@app.route('/drinks/<int:drink_id>', methods=['DELETE'])
+@requires_auth('delete:drinks')
+def delete_drinks(payload, drink_id):
+
+    if not drink_id:
+        abort(422, {'message': 'Please provide valid drink id'})
+
+    drink_to_delete = Drink.query.filter(Drink.id == drink_id).one_or_none()
+
+    if not drink_to_delete:
+        abort(404, {'message': 'Drink with id {} not found in database.'.format(drink_id)})
+
+    drink_to_delete.delete()
+
+    return jsonify({
+        'success': True,
+        'delete': drink_id
+    })
 
 # ---------------------------------------------------------------------------- #
 # Error Handlers                                                               #
