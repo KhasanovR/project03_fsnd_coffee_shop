@@ -24,7 +24,7 @@ class AuthError(Exception):
 # Auth Header
 
 '''
-@TODO: Implement get_token_auth_header() method
+@TODO:(Done) Implement get_token_auth_header() method
     it should attempt to get the header from the request
         it should raise an AuthError if no header is present
     it should attempt to split bearer and the token
@@ -65,7 +65,7 @@ def get_token_auth_header():
 
 
 '''
-@TODO: Implement check_permissions(permission, payload) method
+@TODO(Done): Implement check_permissions(permission, payload) method
     @INPUTS
         permission: string permission (i.e. 'post:drink')
         payload: decoded jwt payload
@@ -78,7 +78,19 @@ def get_token_auth_header():
 
 
 def check_permissions(permission, payload):
-    raise Exception('Not Implemented')
+
+    if 'permissions' not in payload:
+        raise AuthError({
+            'code': 'invalid_claims',
+            'description': 'Permissions not included in JWT.'
+        }, 400)
+
+    if permission not in payload['permissions']:
+        raise AuthError({
+            'code': 'unauthorized',
+            'description': 'Permission not found.'
+        }, 403)
+    return True
 
 
 '''
