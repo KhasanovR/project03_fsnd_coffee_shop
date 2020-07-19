@@ -61,7 +61,6 @@ def get_drinks_with_format(r_format):
 
 @app.route('/drinks', methods=['GET'])
 def drinks():
-
     return jsonify({
         'success': True,
         'drinks': get_drinks_with_format('short')
@@ -77,6 +76,16 @@ def drinks():
     where drinks is the list of drinks or 
     appropriate status code indicating reason for failure
 '''
+
+
+@app.route('/drinks-detail', methods=['GET'])
+@requires_auth('get:drinks-detail')
+def drinks_detail(payload):
+    return jsonify({
+        'success': True,
+        'drinks': get_drinks_with_format('long')
+    })
+
 
 '''
 @TODO: Implement endpoint 
@@ -168,7 +177,7 @@ def bad_request(error):
 
 
 @app.errorhandler(404)
-def ressource_not_found(error):
+def resource_not_found(error):
     try:
         msg = error['description']
     except TypeError:
