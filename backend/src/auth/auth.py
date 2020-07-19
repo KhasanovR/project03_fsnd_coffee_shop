@@ -24,7 +24,7 @@ class AuthError(Exception):
 # Auth Header
 
 '''
-@TODO implement get_token_auth_header() method
+@TODO: Implement get_token_auth_header() method
     it should attempt to get the header from the request
         it should raise an AuthError if no header is present
     it should attempt to split bearer and the token
@@ -34,11 +34,38 @@ class AuthError(Exception):
 
 
 def get_token_auth_header():
-    raise Exception('Not Implemented')
+
+    auth = request.headers.get('Authorization', None)
+
+    if not auth:
+        raise AuthError({
+            'code': 'authorization_header_missing',
+            'description': 'Authorization header is expected.'
+        }, 401)
+
+    parts = auth.split()
+
+    if parts[0].lower() != 'bearer':
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Authorization header must start with "Bearer".'
+        }, 401)
+    elif len(parts) == 1:
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Token not found.'
+        }, 401)
+    elif len(parts) > 2:
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Authorization header must be bearer token.'
+        }, 401)
+
+    return parts[1]
 
 
 '''
-@TODO implement check_permissions(permission, payload) method
+@TODO: Implement check_permissions(permission, payload) method
     @INPUTS
         permission: string permission (i.e. 'post:drink')
         payload: decoded jwt payload
@@ -55,7 +82,7 @@ def check_permissions(permission, payload):
 
 
 '''
-@TODO implement verify_decode_jwt(token) method
+@TODO: Implement verify_decode_jwt(token) method
     @INPUTS
         token: a json web token (string)
 
@@ -75,7 +102,7 @@ def verify_decode_jwt(token):
 
 
 '''
-@TODO implement @requires_auth(permission) decorator method
+@TODO: Implement @requires_auth(permission) decorator method
     @INPUTS
         permission: string permission (i.e. 'post:drink')
 

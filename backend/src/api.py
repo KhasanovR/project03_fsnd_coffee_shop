@@ -10,14 +10,14 @@ from .auth.auth import AuthError, requires_auth
 app = Flask(__name__)
 setup_db(app)
 CORS(app)
-db_drop_and_create_all()
-
 
 '''
-@TODO: Uncomment the following line to initialize the database
+@TODO(Done): Uncomment the following line to initialize the database
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
+
+db_drop_and_create_all()
 
 # ---------------------------------------------------------------------------- #
 # Routes                                                                       #
@@ -102,7 +102,7 @@ def unprocessable(error):
 
 
 '''
-@TODO: Implement error handlers using the @app.errorhandler(error) decorator
+@TODO(Done): Implement error handlers using the @app.errorhandler(error) decorator
     each error handler should return (with approprate messages):
              jsonify({
                     "success": False, 
@@ -129,7 +129,7 @@ def bad_request(error):
 
 
 '''
-@TODO: Implement error handler for 404
+@TODO(Done): Implement error handler for 404
     error handler should conform to general task above 
 '''
 
@@ -150,7 +150,7 @@ def ressource_not_found(error):
 
 
 '''
-@TODO: Implement error handler for AuthError
+@TODO(Done): Implement error handler for AuthError
     error handler should conform to general task above 
 '''
 
