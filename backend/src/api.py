@@ -1,10 +1,14 @@
 import os
-from flask import Flask, request, jsonify, abort
+from flask import (Flask,
+                   request,
+                   jsonify,
+                   abort)
 from sqlalchemy import exc
 import json
 from flask_cors import CORS
-
-from .database.models import db_drop_and_create_all, setup_db, Drink
+from .database.models import (db_drop_and_create_all,
+                              setup_db,
+                              Drink)
 from .auth.auth import AuthError, requires_auth
 
 app = Flask(__name__)
@@ -19,6 +23,27 @@ CORS(app)
 
 db_drop_and_create_all()
 
+
+# ----------------------------------------------------------------------------#
+# Functions
+# ----------------------------------------------------------------------------#
+
+def get_drinks_with_format(r_format):
+    _drinks = Drink.query.order_by(Drink.id).all()
+
+    if r_format.lower() == 'short':
+        formatted_drinks = [drink.short() for drink in _drinks]
+    elif r_format.lower() == 'long':
+        formatted_drinks = [drink.long() for drink in _drinks]
+    else:
+        return abort(500, {'message': '`r_format` must be "short" or "long".'})
+
+    if len(formatted_drinks) == 0:
+        abort(404, {'message': 'Drink: No Found'})
+
+    return formatted_drinks
+
+
 # ---------------------------------------------------------------------------- #
 # Routes                                                                       #
 # ---------------------------------------------------------------------------- #
@@ -32,6 +57,16 @@ db_drop_and_create_all()
     where drinks is the list of drinks or 
     appropriate status code indicating reason for failure
 '''
+
+
+@app.route('/drinks', methods=['GET'])
+def drinks():
+
+    return jsonify({
+        'success': True,
+        'drinks': get_drinks_with_format('short')
+    })
+
 
 '''
 @TODO: Implement endpoint
@@ -88,7 +123,6 @@ Example error handling for unprocessable entity
 
 @app.errorhandler(422)
 def unprocessable(error):
-
     try:
         msg = error['description']
     except TypeError:
@@ -115,7 +149,6 @@ def unprocessable(error):
 
 @app.errorhandler(400)
 def bad_request(error):
-
     try:
         msg = error['description']
     except TypeError:
@@ -136,7 +169,6 @@ def bad_request(error):
 
 @app.errorhandler(404)
 def ressource_not_found(error):
-
     try:
         msg = error['description']
     except TypeError:
@@ -157,7 +189,6 @@ def ressource_not_found(error):
 
 @app.errorhandler(AuthError)
 def authentification_failed(auth_error):
-
     try:
         msg = auth_error.error['description']
     except TypeError:
