@@ -2,10 +2,30 @@ import os
 from sqlalchemy import Column, String, Integer
 from flask_sqlalchemy import SQLAlchemy
 import json
+import ast
+
+# ------------------------------------------------------ #
+#   Postgresql config                                    #
+# ------------------------------------------------------ #
+
+# database_path = "{}://{}:{}@{}:{}/{}".format(
+#     'postgresql',   # type
+#     'postgres',     # username
+#     '0820',         # password
+#     'localhost',    # host
+#     '5432',         # port
+#     'coffee'        # db name
+#     )
+
+
+# ------------------------------------------------------ #
+#   SQLite config                                        #
+# ------------------------------------------------------ #
 
 database_filename = "database.db"
 project_dir = os.path.dirname(os.path.abspath(__file__))
-database_path = "sqlite:///{}".format(os.path.join(project_dir, database_filename))
+database_path = "sqlite:///{}".format(os.path.join(project_dir,
+                                                   database_filename))
 
 db = SQLAlchemy()
 
@@ -56,13 +76,35 @@ class Drink(db.Model):
     '''
 
     def short(self):
-        print(json.loads(self.recipe))
-        short_recipe = [{'color': r['color'], 'parts': r['parts']} for r in json.loads(self.recipe)]
-        return {
+
+        try:
+            
+            short_recipe = [{'color': r['color'], 'parts': r['parts']} for r in json.loads(self.recipe)]
+
+            return {
             'id': self.id,
             'title': self.title,
             'recipe': short_recipe
-        }
+            }
+
+        except:
+
+            rec = ast.literal_eval(self.recipe)
+            print(type(rec))
+
+            if isinstance(rec, dict):
+                
+                short_recipe = [{'color': rec['color'], 'parts': rec['parts']}]
+                
+            else:
+                
+                short_recipe = [{'color': r['color'], 'parts': r['parts']} for r in rec]
+
+            return {
+            'id': self.id,
+            'title': self.title,
+            'recipe': short_recipe
+            }
 
     '''
     long()
@@ -70,11 +112,22 @@ class Drink(db.Model):
     '''
 
     def long(self):
-        return {
+
+        try:
+
+            return {
             'id': self.id,
             'title': self.title,
             'recipe': json.loads(self.recipe)
-        }
+            }
+
+        except:
+
+            return {
+            'id': self.id,
+            'title': self.title,
+            'recipe': self.recipe
+            }
 
     '''
     insert()
@@ -113,8 +166,7 @@ class Drink(db.Model):
             drink.update()
     '''
 
-    @staticmethod
-    def update():
+    def update(self):
         db.session.commit()
 
     def __repr__(self):

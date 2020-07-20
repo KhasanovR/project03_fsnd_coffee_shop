@@ -21,7 +21,7 @@ CORS(app)
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
 
-db_drop_and_create_all()
+# db_drop_and_create_all()
 
 
 # ----------------------------------------------------------------------------#
@@ -61,6 +61,7 @@ def get_drinks_with_format(r_format):
 
 @app.route('/drinks', methods=['GET'])
 def drinks():
+    print( Drink.query.order_by(Drink.id).all())
     return jsonify({
         'success': True,
         'drinks': get_drinks_with_format('short')
